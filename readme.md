@@ -12,6 +12,8 @@ A lock file will be created preventing more than one test running at the same ti
 
 If it does, you can clear the lock file at `/tmp/speedtest.lock` or restart the docker container if you're using docker.
 
+If either `bits` value, or `ping` return `-1.0` that means the value couldn't be parsed from the speed test results.
+
 ### With Docker Compose
 
 ```bash

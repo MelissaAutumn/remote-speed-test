@@ -5,11 +5,14 @@ import subprocess
 
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+
 app = FastAPI()
 
 
 @app.get("/")
-def read_root():
+def main():
+    """Checks the lockfile, and if okay runs the speed test as a subprocess and returns the results.
+    Other-wise returns a timestamp of the lockfile generation."""
     lock_file = '/tmp/speedtest.lock'
     if os.path.isfile(lock_file):
         with open(lock_file, 'r') as fh:
@@ -33,6 +36,8 @@ def read_root():
     os.unlink(lock_file)
 
     results = json.loads(stdout[0])
+
+    # TODO: Check if this is actually correct!
     download_bits = float(results.get('download', -1.0))
     download_megabits = download_bits / 1000000.0
     download_bytes = download_bits / 8.0
@@ -49,16 +54,15 @@ def read_root():
         'success': True,
         'download': {
             'bits': download_bits,
-            'megabits': download_megabits,
             'bytes': download_bytes,
+            'megabits': download_megabits,
             'megabytes': download_megabytes
         },
         'upload': {
             'bits': upload_bits,
-            'megabits': upload_megabits,
             'bytes': upload_bytes,
+            'megabits': upload_megabits,
             'megabytes': upload_megabytes
         },
         'ping': ping
     })
-
